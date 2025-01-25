@@ -9,6 +9,8 @@ import com.gymmanagement.gym_management_application.repository.ClubClassReposito
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ClassService {
@@ -57,10 +59,16 @@ public class ClassService {
             throw new ValidationException("End date must not be before the start date.");
         }
 
-        // Check if the capacity exceeds the maximum limit (e.g., 10)
-        int maxCapacity = 10; // max capacity limit
-        if (classDto.getCapacity() > maxCapacity) {
-            throw new CapacityExceededException("Capacity exceeds the maximum limit of " + maxCapacity + ".");
+        // Check for overlapping classes in the same date range
+        ClubClass conflictingClass = clubClassRepository.findFirstByStartDateBeforeAndEndDateAfter(
+                classDto.getEndDate(), classDto.getStartDate());
+
+        if (conflictingClass != null) {
+            String errorMessage = String.format(
+                    "A class already exists in this date range. " +
+                            "Conflicting class: Start Date - %s, End Date - %s",
+                    conflictingClass.getStartDate(), conflictingClass.getEndDate());
+            throw new ValidationException(errorMessage);
         }
     }
 
@@ -75,5 +83,16 @@ public class ClassService {
                 clazz.getDuration(),
                 clazz.getCapacity()
         );
+    }
+
+    // Method to retrieve all classes
+    public List<ClassResponseDto> getAllClasses() {
+        // Fetch all classes from the repository
+        List<ClubClass> allClasses = clubClassRepository.findAll();
+
+        // Map the list of ClubClass entities to a list of ClassResponseDto objects
+        return allClasses.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 }

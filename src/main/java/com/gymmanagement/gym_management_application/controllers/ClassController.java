@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/classes")
 public class ClassController {
@@ -47,13 +49,24 @@ public class ClassController {
             return ResponseEntity.badRequest().body(
                     new GenericResponse().failure(e.getMessage(), "VALIDATION_ERROR")
             );
-        } catch (CapacityExceededException e) {
-            // Catch CapacityExceededException if the class exceeds the maximum capacity
-            return ResponseEntity.badRequest().body(
-                    new GenericResponse().failure(e.getMessage(), "CAPACITY_EXCEEDED")
-            );
         } catch (Exception e) {
             // Catch any other exceptions and return a generic error response
+            return ResponseEntity.status(500).body(
+                    new GenericResponse().failure("An unexpected error occurred.", "INTERNAL_SERVER_ERROR")
+            );
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<GenericResponse> getAllClasses() {
+        try {
+            // Call the ClassService to get a list of all classes
+            List<ClassResponseDto> classes = classService.getAllClasses();
+
+            // Return the list of classes in the response
+            return ResponseEntity.ok(new GenericResponse().success("Classes retrieved successfully.", classes));
+        } catch (Exception e) {
+            // Catch any exception and return a generic error response
             return ResponseEntity.status(500).body(
                     new GenericResponse().failure("An unexpected error occurred.", "INTERNAL_SERVER_ERROR")
             );
