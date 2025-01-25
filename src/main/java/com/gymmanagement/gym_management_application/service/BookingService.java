@@ -4,12 +4,10 @@ import com.gymmanagement.gym_management_application.dto.BookingDto;
 import com.gymmanagement.gym_management_application.dto.BookingResponseDto;
 import com.gymmanagement.gym_management_application.entity.Booking;
 import com.gymmanagement.gym_management_application.entity.ClubClass;
-import com.gymmanagement.gym_management_application.exception.NoRecordsFoundException;
+import com.gymmanagement.gym_management_application.exception.*;
+import com.gymmanagement.gym_management_application.exception.ClassNotFoundException;
 import com.gymmanagement.gym_management_application.repository.BookingRepository;
 import com.gymmanagement.gym_management_application.repository.ClubClassRepository;
-import com.gymmanagement.gym_management_application.exception.ClassNotFoundException;
-import com.gymmanagement.gym_management_application.exception.InvalidParticipationDateException;
-import com.gymmanagement.gym_management_application.exception.CapacityExceededException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -36,6 +34,19 @@ public class BookingService {
         // Ensure the participation date is in the future
         if (bookingDto.getParticipationDate().isBefore(LocalDate.now())) {
             throw new InvalidParticipationDateException("Participation date must be in the future.");
+        }
+
+        // Check if the end date is before the start date
+        if (clazz.getEndDate().isBefore(clazz.getStartDate())) {
+            throw new ValidationException("End date must not be before the start date.");
+        }
+
+        // Check if the participation date is within the class start and end dates
+        if (bookingDto.getParticipationDate().isBefore(clazz.getStartDate()) ||
+                bookingDto.getParticipationDate().isAfter(clazz.getEndDate())) {
+            throw new InvalidParticipationDateException(String.format(
+                    "Participation date must be on or between the class start date (%s) and end date (%s).",
+                    clazz.getStartDate(), clazz.getEndDate()));
         }
 
 
