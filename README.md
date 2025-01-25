@@ -18,7 +18,6 @@ Before running this project, ensure you have the following installed:
 - **Postman or any API testing tool** (for testing API endpoints)
 
 ### Optional Tools:
-- **Docker** (optional, for running MySQL container, though we are using H2 for this project)
 - **Postman** (optional, for testing REST API)
 
 ## Setting Up the Project
