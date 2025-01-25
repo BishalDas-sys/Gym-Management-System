@@ -4,8 +4,6 @@ import com.gymmanagement.gym_management_application.controllers.BookingControlle
 import com.gymmanagement.gym_management_application.dto.BookingDto;
 import com.gymmanagement.gym_management_application.dto.BookingResponseDto;
 import com.gymmanagement.gym_management_application.dto.GenericResponse;
-import com.gymmanagement.gym_management_application.exception.CapacityExceededException;
-import com.gymmanagement.gym_management_application.exception.ClassNotFoundException;
 import com.gymmanagement.gym_management_application.exception.NoRecordsFoundException;
 import com.gymmanagement.gym_management_application.repository.ClubClassRepository;
 import com.gymmanagement.gym_management_application.service.BookingService;
@@ -21,12 +19,11 @@ import org.springframework.validation.FieldError;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class BookingControllerTest {
+class BookingUnitTest {
 
     @InjectMocks
     private BookingController bookingController;
